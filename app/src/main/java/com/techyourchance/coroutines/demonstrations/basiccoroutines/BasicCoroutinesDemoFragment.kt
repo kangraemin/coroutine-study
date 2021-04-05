@@ -49,6 +49,7 @@ class BasicCoroutinesDemoFragment : BaseFragment() {
         return view
     }
 
+    // Background Thread에서 작동 할 코드만 suspend function에 놔두는 것이 좋음
     private suspend fun executeBenchmark(): Long {
         val benchmarkDurationSeconds = 5
 
