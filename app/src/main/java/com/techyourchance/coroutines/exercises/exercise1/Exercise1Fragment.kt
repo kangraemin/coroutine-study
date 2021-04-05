@@ -53,8 +53,8 @@ class Exercise1Fragment : BaseFragment() {
 
         btnGetReputation = view.findViewById(R.id.btn_get_reputation)
         btnGetReputation.setOnClickListener {
+            logThreadInfo("button callback")
             coroutineScope.launch {
-                logThreadInfo("button callback")
                 btnGetReputation.isEnabled = false
                 val reputation = getReputationForUser(edtUserId.text.toString())
                 Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
@@ -66,8 +66,8 @@ class Exercise1Fragment : BaseFragment() {
     }
 
     private suspend fun getReputationForUser(userId: String): Int {
-        logThreadInfo("getReputationForUser()")
         return withContext(Dispatchers.Default) {
+            logThreadInfo("getReputationForUser()")
             getReputationEndpoint.getReputation(userId)
         }
     }
