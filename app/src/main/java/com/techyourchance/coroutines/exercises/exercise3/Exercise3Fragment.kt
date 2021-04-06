@@ -87,12 +87,14 @@ class Exercise3Fragment : BaseFragment() {
     }
 
     private suspend fun calculateEElapsedTime(): Int {
-        var elapsedTime = 0
-        while (!getReputationCallIsEnded) {
-            delay(10)
-            elapsedTime += 10
+        return withContext(Dispatchers.Default) {
+            var elapsedTime = 0
+            while (!getReputationCallIsEnded) {
+                delay(10)
+                elapsedTime += 10
+            }
+            return@withContext elapsedTime
         }
-        return elapsedTime
     }
 
     private suspend fun getReputationForUser(userId: String): Int {
