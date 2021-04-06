@@ -26,6 +26,8 @@ class ConcurrentCoroutinesDemoFragment : BaseFragment() {
     private var jobCounter: Job? = null
     private var job: Job? = null
 
+    private var hasBenchmarkBeenStartedOnce = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_loop_iterations_demo, container, false)
 
@@ -47,6 +49,8 @@ class ConcurrentCoroutinesDemoFragment : BaseFragment() {
                 Toast.makeText(requireContext(), "$iterationsCount", Toast.LENGTH_SHORT).show()
                 btnStart.isEnabled = true
             }
+
+            hasBenchmarkBeenStartedOnce = true
         }
 
         return view
@@ -55,12 +59,16 @@ class ConcurrentCoroutinesDemoFragment : BaseFragment() {
     override fun onStop() {
         logThreadInfo("onStop()")
         super.onStop()
-        job?.cancel()
-        btnStart.isEnabled = true
-        jobCounter?.apply {
-            cancel()
+        coroutineScope.coroutineContext.cancelChildren()
+        if (hasBenchmarkBeenStartedOnce) {
             txtRemainingTime.text = "done!"
         }
+//        job?.cancel()
+//        btnStart.isEnabled = true
+//        jobCounter?.apply {
+//            cancel()
+//            txtRemainingTime.text = "done!"
+//        }
     }
 
     private suspend fun executeBenchmark(benchmarkDurationSeconds: Int) = withContext(Dispatchers.Default) {
