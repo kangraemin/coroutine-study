@@ -29,7 +29,8 @@ class Exercise3Fragment : BaseFragment() {
 
     private lateinit var getReputationEndpoint: GetReputationEndpoint
 
-    private var job: Job? = null
+    private var getReputationCallIsEnded = false
+    private var hasGetReputationTaskStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,9 @@ class Exercise3Fragment : BaseFragment() {
 
         edtUserId = view.findViewById(R.id.edt_user_id)
         edtUserId.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 btnGetReputation.isEnabled = !s.isNullOrEmpty()
@@ -55,11 +58,20 @@ class Exercise3Fragment : BaseFragment() {
         btnGetReputation = view.findViewById(R.id.btn_get_reputation)
         btnGetReputation.setOnClickListener {
             logThreadInfo("button callback")
-            job = coroutineScope.launch {
+
+            coroutineScope.launch {
                 btnGetReputation.isEnabled = false
+                hasGetReputationTaskStarted = true
+                getReputationCallIsEnded = false
                 val reputation = getReputationForUser(edtUserId.text.toString())
                 Toast.makeText(requireContext(), "reputation: $reputation", Toast.LENGTH_SHORT).show()
+                getReputationCallIsEnded = true
                 btnGetReputation.isEnabled = true
+            }
+
+            coroutineScope.launch {
+                val elapsedTime = calculateEElapsedTime()
+                txtElapsedTime.text = elapsedTime.toString()
             }
         }
 
@@ -68,8 +80,19 @@ class Exercise3Fragment : BaseFragment() {
 
     override fun onStop() {
         super.onStop()
-        job?.cancel()
-        btnGetReputation.isEnabled = true
+        coroutineScope.coroutineContext.cancelChildren()
+        if (hasGetReputationTaskStarted) {
+            btnGetReputation.isEnabled = true
+        }
+    }
+
+    private suspend fun calculateEElapsedTime(): Int {
+        var elapsedTime = 0
+        while (!getReputationCallIsEnded) {
+            delay(10)
+            elapsedTime += 10
+        }
+        return elapsedTime
     }
 
     private suspend fun getReputationForUser(userId: String): Int {
