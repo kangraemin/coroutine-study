@@ -40,14 +40,35 @@ class FactorialUseCaseTest {
 
     @Test
     fun computeFactorial_1_returns1() {
+        // Arrange
+        // Act
+        runBlocking {
+            val result = SUT.computeFactorial(1, 1000)
+            // Assert
+            assertThat((result as FactorialUseCase.Result.Success).result, `is`(BigInteger("1")))
+        }
     }
 
     @Test
     fun computeFactorial_10_returnsCorrectAnswer() {
+        // Arrange
+        // Act
+        runBlocking {
+            val result = SUT.computeFactorial(10, 1000)
+            // Assert
+            assertThat((result as FactorialUseCase.Result.Success).result, `is`(BigInteger("3628800")))
+        }
     }
 
     @Test
     fun computeFactorial_30_returnsCorrectAnswer() {
+        // Arrange
+        // Act
+        runBlocking {
+            val result = SUT.computeFactorial(30, 1000)
+            // Assert
+            assertThat((result as FactorialUseCase.Result.Success).result, `is`(BigInteger("3042648073975910400000")))
+        }
     }
 
 
