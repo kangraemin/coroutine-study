@@ -20,8 +20,33 @@ class Exercise7Test {
         runBlocking {
             val scopeJob = Job()
             val scope = CoroutineScope(scopeJob + CoroutineName("outer scope") + Dispatchers.IO)
-
-
+            scope.launch {
+                try {
+                    delay(100)
+                    try {
+                        withContext(CoroutineName("first withContext") + Dispatchers.Default) {
+                            try {
+                                printJobsHierarchy(scopeJob)
+                                withContext(CoroutineName("second withContext")) {
+                                    delay(100)
+                                    println("second with condtext done !")
+                                }
+                            } catch (e: CancellationException) {
+                                println("second withContext is canceled")
+                            }
+                            delay(100)
+                            println("with context done !")
+                        }
+                    } catch (e: CancellationException) {
+                        println("first withContext is canceled")
+                    }
+                    delay(100)
+                    println("scope launch done !")
+                } catch (e: CancellationException) {
+                    println("outer scope is canceled")
+                }
+            }
+            scopeJob.cancel()
             scopeJob.join()
             println("test done")
         }
@@ -36,8 +61,34 @@ class Exercise7Test {
         runBlocking {
             val scopeJob = Job()
             val scope = CoroutineScope(scopeJob + CoroutineName("outer scope") + Dispatchers.IO)
-
-
+            scope.launch {
+                try {
+                    delay(100)
+                    try {
+                        withContext(CoroutineName("first withContext") + Dispatchers.Default) {
+                            try {
+                                printJobsHierarchy(scopeJob)
+                                launch(CoroutineName("second withContext")) {
+                                    delay(100)
+                                    println("second with condtext done !")
+                                }
+                            } catch (e: CancellationException) {
+                                println("second withContext is canceled")
+                            }
+                            delay(100)
+                            println("with context done !")
+                        }
+                    } catch (e: CancellationException) {
+                        println("first withContext is canceled")
+                    }
+                    delay(100)
+                    println("scope launch done !")
+                } catch (e: CancellationException) {
+                    println("outer scope is canceled")
+                }
+            }
+            delay(250)
+            scopeJob.cancel()
             scopeJob.join()
             println("test done")
         }
@@ -52,8 +103,34 @@ class Exercise7Test {
         runBlocking {
             val scopeJob = Job()
             val scope = CoroutineScope(scopeJob + CoroutineName("outer scope") + Dispatchers.IO)
-
-
+            scope.launch {
+                try {
+                    delay(100)
+                    try {
+                        withContext(CoroutineName("first withContext") + Dispatchers.Default) {
+                            try {
+                                printJobsHierarchy(scopeJob)
+                                scope.launch(CoroutineName("second withContext")) {
+                                    delay(100)
+                                    println("second with condtext done !")
+                                }
+                            } catch (e: CancellationException) {
+                                println("second withContext is canceled")
+                            }
+                            delay(100)
+                            println("with context done !")
+                        }
+                    } catch (e: CancellationException) {
+                        println("first withContext is canceled")
+                    }
+                    delay(100)
+                    println("scope launch done !")
+                } catch (e: CancellationException) {
+                    println("outer scope is canceled")
+                }
+            }
+            delay(250)
+            scopeJob.cancel()
             scopeJob.join()
             println("test done")
         }
